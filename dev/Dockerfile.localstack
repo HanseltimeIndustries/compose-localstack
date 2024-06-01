@@ -1,0 +1,5 @@
+ARG BASE_IMAGE
+ARG IMAGE=${BASE_IMAGE}localstack/localstack
+FROM $IMAGE
+
+COPY bin/wait-for-it.sh /wait-for-it.sh

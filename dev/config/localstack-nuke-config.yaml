@@ -1,0 +1,52 @@
+regions:
+- us-east-1
+
+account-blocklist:
+- "999999999999" # production
+
+accounts:
+  000000000000: {}
+
+# Explicitly name the resources you want to remove since this will take really long otherwise
+# and present a bunch of errors
+resource-types:
+  # only nuke these three resources
+  targets:
+  - S3Object
+  - S3Bucket
+  - IAMRole
+  - SecretsManagerSecret
+  - SSMParameter
+
+endpoints:
+- region: us-east-1
+  tls_insecure_skip_verify: true
+  services:
+  - service: secretsmanager
+    url: http://localstack:4566
+  - service: ec2
+    url: http://localstack:4566
+  - service: s3
+    url: http://localstack:4566
+  - service: rds
+    url: http://localstack:4566
+  - service: elbv2
+    url: http://localstack:4566
+  - service: efs
+    url: http://localstack:4566
+  - service: emr
+    url: http://localstack:4566
+  - service: autoscaling
+    url: http://localstack:4566
+  - service: cloudwatch
+    url: http://localstack:4566
+  - service: sns
+    url: http://localstack:4566
+  - service: iam
+    url: http://localstack:4566
+  - service: sts
+    url: http://localstack:4566
+  - service: acm
+    url: http://localstack:4566
+  - service: ""
+    url: http://localstack:4566

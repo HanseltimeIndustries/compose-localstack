@@ -1,0 +1,45 @@
+name: dev-compose
+
+services:
+  # Use this to set up local AWS services for interacting with apps
+  # (Has its limits for larger services like EKS)
+  localstack:
+    build:
+      context: .
+      dockerfile: Dockerfile.localstack
+      args:
+        - BASE_IMAGE
+      network: host
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - DEBUG=${DEBUG:-0}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    healthcheck:
+      test: /wait-for-it.sh localstack:4566 -t 5
+      interval: 5s
+      retries: 3
+  localstack-init:
+    depends_on:
+      localstack:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile.localstack-init
+      args:
+        - BASE_IMAGE
+      network: host
+    environment:
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_ACCOUNT=localstack
+  # example-app:
+  #   depends_on:
+  #     db-migrate:
+  #       condition: service_completed_successfully
+  #   image: busybox

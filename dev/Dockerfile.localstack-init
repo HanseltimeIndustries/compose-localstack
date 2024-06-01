@@ -1,0 +1,16 @@
+ARG BASE_IMAGE
+ARG IMAGE=${BASE_IMAGE}alpine
+FROM --platform=amd64 $IMAGE
+
+# Install python/pip
+RUN apk add --no-cache aws-cli wget tar expect
+
+RUN wget -c https://github.com/rebuy-de/aws-nuke/releases/download/v2.25.0/aws-nuke-v2.25.0-linux-amd64.tar.gz -O - \
+    | tar -xz -C /usr/local/bin \
+    && mv /usr/local/bin/aws-nuke-v2.25.0-linux-amd64 /usr/local/bin/aws-nuke
+
+COPY config/localstack-nuke-config.yaml /localstack-nuke-config.yaml
+COPY bin/localstack.sh localstack.sh
+COPY bin/aws-nuke-expect.e /aws-nuke-expect.e
+
+ENTRYPOINT [ "./localstack.sh" ]
